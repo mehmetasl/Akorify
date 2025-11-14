@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Emerald & Purple Theme - Light Mode */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    
+    /* Primary: Emerald (zümrüt yeşili) */
+    --primary: 160 84% 39%; /* emerald-600 */
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary: Purple (mor) */
+    --secondary: 262 83% 58%; /* purple-600 */
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Muted: Soft emerald */
+    --muted: 160 60% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* Accent: Purple with emerald hint */
+    --accent: 262 70% 95%;
+    --accent-foreground: 262 83% 58%;
+    
+    /* Border & Input: Soft gray with emerald tint */
+    --border: 160 20% 90%;
+    --input: 160 20% 90%;
+    
+    /* Ring: Emerald */
+    --ring: 160 84% 39%;
+  }
+
+  .dark {
+    /* Emerald & Purple Theme - Dark Mode */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    
+    /* Primary: Emerald (lighter for dark mode) */
+    --primary: 160 90% 50%; /* emerald-400 */
+    --primary-foreground: 222 47% 11%;
+    
+    /* Secondary: Purple (lighter for dark mode) */
+    --secondary: 262 80% 65%; /* purple-400 */
+    --secondary-foreground: 222 47% 11%;
+    
+    /* Muted: Dark purple-gray */
+    --muted: 262 20% 20%;
+    --muted-foreground: 215 20% 65%;
+    
+    /* Accent: Dark purple */
+    --accent: 262 30% 25%;
+    --accent-foreground: 262 80% 65%;
+    
+    /* Border & Input: Dark with purple tint */
+    --border: 262 20% 25%;
+    --input: 262 20% 25%;
+    
+    /* Ring: Emerald */
+    --ring: 160 90% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* Gradient animation for text */
+  @keyframes gradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+}
+
+/* Lyrics-specific typography */
+.lyrics-content {
+  @apply text-base md:text-lg leading-relaxed;
+  font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  line-height: 2;
+}
+
+.lyrics-content p {
+  @apply mb-4;
+}
+
+.lyrics-content .chord {
+  @apply font-bold text-primary;
+}
+
+/* Chord Display Component Styles */
+.chord-display {
+  @apply font-mono;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.chord-display .chord-line {
+  @apply mb-3;
+}
+
+.chord-display .chord-row {
+  @apply text-primary font-bold mb-1;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre;
+  letter-spacing: 0.5px;
+}
+
+.chord-display .lyric-row {
+  @apply text-foreground;
+  font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
