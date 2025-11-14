@@ -37,4 +37,13 @@ next-env.d.ts
 
 # prisma
 /prisma/migrations
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# data files (already imported to database - do not push to GitHub)
+formatted-data/
+chordpro-files/
+*.cho
+*.pro
+*.chordpro
 
