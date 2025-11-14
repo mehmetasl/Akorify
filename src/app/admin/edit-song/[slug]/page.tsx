@@ -9,6 +9,12 @@ interface PageProps {
 
 async function getSong(slug: string) {
   try {
+    // Check if DATABASE_URL is available
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not set, returning null')
+      return null
+    }
+    
     const song = await prisma.song.findUnique({
       where: { slug },
     })

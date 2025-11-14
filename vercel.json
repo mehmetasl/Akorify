@@ -1,11 +1,8 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "prisma generate && prisma migrate deploy && npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "env": {
-    "PRISMA_GENERATE_DATAPROXY": "false"
-  }
+  "regions": ["iad1"]
 }
 
