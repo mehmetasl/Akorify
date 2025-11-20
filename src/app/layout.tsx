@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
-import '@/styles/globals.css'
-import Navbar from '@/components/Navbar'
+import '../styles/globals.css'
+import Navbar from '@/components/Navbar' // Yukarıda güncellediğimiz dosya buradan gelecek
 import Footer from '@/components/Footer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   applicationName: 'Akorify',
   description:
-    'Türkiye\'nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının sözleri ve akorlarını keşfedin.',
+    "Türkiye'nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının sözleri ve akorlarını keşfedin.",
   keywords: [
     'şarkı sözleri',
     'gitar akorları',
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     title: 'Akorify - Şarkı Sözleri ve Gitar Akorları',
     description:
-      'Türkiye\'nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının sözleri ve akorlarını keşfedin.',
+      "Türkiye'nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının sözleri ve akorlarını keşfedin.",
     siteName: 'Akorify',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Akorify - Şarkı Sözleri ve Gitar Akorları',
     description:
-      'Türkiye\'nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının sözleri ve akorlarını keşfedin.',
+      "Türkiye'nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının sözleri ve akorlarını keşfedin.",
   },
   robots: {
     index: true,
@@ -64,23 +64,22 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add your Google Search Console verification code here
     // google: 'your-verification-code',
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr" className={inter.variable} suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col" suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        {/* Navbar artık Auth özellikli */}
         <Navbar />
+
         <main className="flex-1">{children}</main>
+
         <Footer />
-        {/* Google AdSense - Load using Next.js Script component */}
+
+        {/* Google AdSense */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
             id="adsbygoogle-init"
@@ -93,4 +92,3 @@ export default function RootLayout({
     </html>
   )
 }
-
