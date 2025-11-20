@@ -14,11 +14,14 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "import:chordpro": "node scripts/import-chordpro.js",
-    "import:all": "node scripts/import-chordpro.js ./chordpro-files"
+    "import:all": "node scripts/import-chordpro.js ./chordpro-files",
+    "import:production": "node scripts/import-production.js ./formatted-data",
+    "check:db": "node scripts/check-database.js"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
     "@radix-ui/react-slot": "^1.1.0",
+    "chordsheetjs": "^12.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",

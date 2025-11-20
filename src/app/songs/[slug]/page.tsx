@@ -1,121 +1,53 @@
 import { prisma } from '@/lib/prisma'
+import ChordDisplay from '@/components/ChordDisplay' // Güncellediğimiz bileşen
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
-import AdSlot from '@/components/AdSlot'
-import ChordDisplay from '@/components/ChordDisplay'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
-
-export const revalidate = 86400 // Revalidate once per day (ISR)
+import { Metadata } from 'next'
 
 interface PageProps {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }
 
-async function getSong(slug: string) {
-  try {
-    const song = await prisma.song.findUnique({
-      where: { slug },
-    })
-    return song
-  } catch (error) {
-    console.error('Error fetching song:', error)
-    return null
-  }
-}
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const song = await prisma.song.findUnique({
+    where: { slug: params.slug },
+    select: { title: true, artist: true },
+  })
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const song = await getSong(slug)
-
-  if (!song) {
-    return {
-      title: 'Şarkı Bulunamadı',
-    }
-  }
-
+  if (!song) return { title: 'Şarkı Bulunamadı' }
   return {
-    title: `${song.title} - ${song.artist}`,
-    description: `${song.artist} - ${song.title} şarkı sözleri ve gitar akorları. Akorify'de keşfedin.`,
-    keywords: [
-      song.title,
-      song.artist,
-      'şarkı sözleri',
-      'gitar akorları',
-      'lyrics',
-      'chords',
-    ],
-    openGraph: {
-      title: `${song.title} - ${song.artist}`,
-      description: `${song.artist} - ${song.title} şarkı sözleri ve gitar akorları.`,
-      type: 'article',
-      publishedTime: song.createdAt.toISOString(),
-      modifiedTime: song.updatedAt.toISOString(),
-    },
-    alternates: {
-      canonical: `/songs/${slug}`,
-    },
+    title: `${song.title} Akor - ${song.artist}`,
   }
 }
 
 export default async function SongPage({ params }: PageProps) {
-  const { slug } = await params
-  const song = await getSong(slug)
+  const song = await prisma.song.findUnique({
+    where: { slug: params.slug },
+  })
 
-  if (!song) {
-    notFound()
-  }
+  if (!song) return notFound()
 
   return (
-    <div className="container py-8 md:py-12">
-      {/* Back Button */}
-      <Link
-        href="/songs"
-        className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Tüm Şarkılara Dön
-      </Link>
+    <main className="min-h-screen bg-background px-4 py-8 md:px-8">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-8 border-b border-border pb-6">
+          <h1 className="mb-2 text-3xl font-bold md:text-4xl">{song.title}</h1>
+          <div className="text-lg text-muted-foreground">
+            Sanatçı: <span className="font-semibold text-primary">{song.artist}</span>
+          </div>
+        </header>
 
-      {/* Song Header */}
-      <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold md:text-4xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          {song.title}
-        </h1>
-        <p className="text-xl text-muted-foreground">{song.artist}</p>
-      </header>
+        {/* Reklam Alanı */}
+        <div className="mb-8 flex h-[100px] w-full items-center justify-center rounded-lg border border-dashed bg-secondary/20">
+          <span className="text-xs text-muted-foreground">REKLAM</span>
+        </div>
 
-      {/* Ad Slot - Top */}
-      <AdSlot adFormat="horizontal" className="mb-8" />
-
-      {/* Song Content */}
-      <article className="bg-card rounded-lg border p-6 md:p-8">
-        <ChordDisplay lyrics={song.content} className="bg-muted/30 p-4 rounded-lg" />
-      </article>
-
-      {/* Ad Slot - Bottom */}
-      <AdSlot adFormat="horizontal" className="mt-8" />
-
-      {/* SEO Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'MusicComposition',
-            name: song.title,
-            byArtist: {
-              '@type': 'MusicGroup',
-              name: song.artist,
-            },
-            datePublished: song.createdAt.toISOString(),
-            dateModified: song.updatedAt.toISOString(),
-          }),
-        }}
-      />
-    </div>
+        {/* 
+            DİKKAT: Artık 'initialLines' göndermiyoruz. 
+            Direkt 'lyrics' propuna veritabanındaki ham metni basıyoruz. 
+            Senin eski sistemin bunu zaten düzgün gösteriyordu.
+        */}
+        <ChordDisplay lyrics={song.content} />
+      </div>
+    </main>
   )
 }
-
