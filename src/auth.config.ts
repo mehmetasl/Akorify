@@ -2,25 +2,36 @@ import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
   pages: {
-    signIn: "/login", // Giriş sayfamızın yolu bu olacak
+    signIn: "/login", // Giriş sayfası yolu
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard"); // İleride dashboard yaparsak korumak için
       
-      if (isOnDashboard) {
+      // Dashboard veya Admin paneli koruması (İlerisi için)
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      const isOnAdmin = nextUrl.pathname.startsWith("/admin");
+
+      if (isOnDashboard || isOnAdmin) {
         if (isLoggedIn) return true;
-        return false; // Giriş yapmamışsa dashboard'a giremez
+        return false; // Giriş yapmamışsa at
       }
+
+      // --- DÜZELTME BURADA ---
+      // Eğer kullanıcı giriş yapmışsa ve hala giriş/kayıt sayfasındaysa
+      // onu ana sayfaya yönlendir.
+      if (isLoggedIn) {
+        if (nextUrl.pathname.startsWith("/login") || nextUrl.pathname.startsWith("/register")) {
+          return Response.redirect(new URL("/", nextUrl));
+        }
+      }
+
       return true;
     },
-    // Session'a kullanıcı ID'sini ve Rolünü ekliyoruz
     session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
       }
-      // Token'dan gelen rolü session'a ekle (Typescript kızabilir, şimdilik any)
       if (session.user && token.role) {
         (session.user as any).role = token.role;
       }
@@ -33,5 +44,5 @@ export const authConfig = {
       return token;
     }
   },
-  providers: [], // Providers'ı burada boş bırakıyoruz, auth.ts'de dolduracağız
+  providers: [], 
 } satisfies NextAuthConfig;
