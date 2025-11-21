@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
-import ChordDisplay from '@/components/ChordDisplay' // Güncellediğimiz bileşen
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import SongClientWrapper from './SongClientWrapper' // Yeni oluşturduğumuz wrapper
 
 interface PageProps {
   params: { slug: string }
@@ -27,26 +27,30 @@ export default async function SongPage({ params }: PageProps) {
   if (!song) return notFound()
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 md:px-8">
-      <div className="mx-auto max-w-4xl">
-        <header className="mb-8 border-b border-border pb-6">
+    // pb-32: Alt kısımda video ve mobil reklam için ekstra boşluk
+    <main className="min-h-screen bg-background pb-32">
+      {/* Header ve Başlık Alanı */}
+      <div className="container px-4 pt-8 md:px-8">
+        <header className="mb-6 border-b border-border pb-6">
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">{song.title}</h1>
           <div className="text-lg text-muted-foreground">
             Sanatçı: <span className="font-semibold text-primary">{song.artist}</span>
           </div>
         </header>
 
-        {/* Reklam Alanı */}
-        <div className="mb-8 flex h-[100px] w-full items-center justify-center rounded-lg border border-dashed bg-secondary/20">
-          <span className="text-xs text-muted-foreground">REKLAM</span>
+        {/* Üst Yatay Reklam Alanı */}
+        <div className="mb-4 flex h-[100px] w-full items-center justify-center rounded-lg border border-dashed bg-secondary/20">
+          <span className="text-xs text-muted-foreground">YATAY REKLAM (Responsive)</span>
         </div>
+      </div>
 
-        {/* 
-            DİKKAT: Artık 'initialLines' göndermiyoruz. 
-            Direkt 'lyrics' propuna veritabanındaki ham metni basıyoruz. 
-            Senin eski sistemin bunu zaten düzgün gösteriyordu.
-        */}
-        <ChordDisplay lyrics={song.content} />
+      {/* 
+          Tüm interaktif işlemler (Video, Transpoze, Scroll) 
+          artık bu Wrapper içinde dönüyor.
+          SEO için veriyi (song) buradan gönderiyoruz.
+      */}
+      <div className="container px-4 md:px-8">
+        <SongClientWrapper song={song} />
       </div>
     </main>
   )

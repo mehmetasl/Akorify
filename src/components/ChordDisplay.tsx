@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Chord } from 'chordsheetjs' // DİKKAT: Buraya Chord eklendi
+import { Chord } from 'chordsheetjs'
 import { Minus, Plus, Music } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface ChordDisplayProps {
   lyrics: string
   className?: string
+  isTwoColumns?: boolean
+  initialLines?: any
 }
 
 interface LinePair {
@@ -92,7 +95,12 @@ function parseChordLines(content: string, transposeSteps: number): LinePair[] {
   return pairs
 }
 
-export default function ChordDisplay({ lyrics, className = '' }: ChordDisplayProps) {
+export default function ChordDisplay({
+  lyrics,
+  className = '',
+  isTwoColumns = false,
+  initialLines,
+}: ChordDisplayProps) {
   const [transpose, setTranspose] = useState(0)
 
   const linePairs = useMemo(() => {
@@ -100,9 +108,9 @@ export default function ChordDisplay({ lyrics, className = '' }: ChordDisplayPro
   }, [lyrics, transpose])
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={cn('w-full', className)}>
       {/* KONTROL PANELİ */}
-      <div className="mb-6 flex items-center justify-between rounded-xl border border-border/50 bg-secondary/10 p-3">
+      <div className="mb-6 flex break-inside-avoid items-center justify-between rounded-xl border border-border/50 bg-secondary/10 p-3">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Music className="h-5 w-5" />
           <span className="hidden text-sm font-medium sm:inline">Ton Ayarı</span>
@@ -126,20 +134,36 @@ export default function ChordDisplay({ lyrics, className = '' }: ChordDisplayPro
         </div>
       </div>
 
-      {/* ŞARKI GÖRÜNTÜLEME */}
-      <div className="scrollbar-thin overflow-x-auto pb-4 font-mono text-base">
+      {/* ŞARKI GÖRÜNTÜLEME ALANI */}
+      <div
+        className={cn(
+          'pb-4 font-mono text-base',
+          // İki sütun açıksa ve ekran genişse (md) sütunlara böl
+          isTwoColumns ? 'md:block md:columns-2 md:gap-12' : ''
+        )}
+      >
         {linePairs.map((pair, index) => (
-          <div key={index} className="mb-4 min-w-fit break-inside-avoid">
+          <div
+            key={index}
+            // break-inside-avoid: Bu kutuyu (akor+söz) asla ortadan bölme
+            // inline-block w-full: Sütun yapısında rendering hatasını önler
+            className="mb-4 inline-block w-full break-inside-avoid"
+          >
+            {/* Akor Satırı */}
             {pair.chords && (
-              <div className="mb-1 select-none whitespace-pre text-sm font-bold text-primary">
+              <div className="mb-1 select-none whitespace-pre text-sm font-bold leading-none text-primary">
                 {pair.chords}
               </div>
             )}
+
+            {/* Söz Satırı */}
             {pair.lyrics && (
-              <div className="whitespace-pre font-sans text-lg leading-relaxed text-foreground">
+              <div className="whitespace-pre-wrap font-sans text-lg leading-relaxed text-foreground">
                 {pair.lyrics}
               </div>
             )}
+
+            {/* Boş Satır */}
             {!pair.chords && !pair.lyrics && <div className="h-6" />}
           </div>
         ))}
