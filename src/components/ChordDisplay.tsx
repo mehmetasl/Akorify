@@ -24,7 +24,8 @@ interface LinePair {
 function isChordLine(line: string): boolean {
   const trimmed = line.trim()
   if (!trimmed) return false
-  const chordPattern = /^[A-G][#b]?[m]?[0-9]?(\s+[A-G][#b]?[m]?[0-9]?)*\s*(x\d+)?\s*$/i
+  const chordPattern =
+    /^[A-G][#b]?(?:m|maj|min|aug|dim|sus|add|M)?[0-9]*(?:\/[A-G][#b]?)?(\s+[A-G][#b]?(?:m|maj|min|aug|dim|sus|add|M)?[0-9]*(?:\/[A-G][#b]?)?)*\s*(x\d+)?\s*$/i
   const hasTurkishChars = /[ğüşıöçĞÜŞİÖÇ]/.test(trimmed)
   const hasLongWords = /\b[a-zğüşıöç]{3,}\b/i.test(trimmed)
   const specialCases = /^(Intro:|x\d+|N|Outro:)$/i.test(trimmed)
