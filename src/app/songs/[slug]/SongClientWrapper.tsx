@@ -17,12 +17,10 @@ interface Song {
   content: string
   youtubeUrl?: string | null
 }
-
 interface WrapperProps {
   song: Song
   isFavorited: boolean
 }
-
 export default function SongClientWrapper({ song, isFavorited }: WrapperProps) {
   // --- STATE'LER ---
   const [isVideoOpen, setIsVideoOpen] = useState(false)
