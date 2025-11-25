@@ -33,7 +33,7 @@ export default function FloatingVideo({ url, isOpen, onClose }: FloatingVideoPro
   if (!isOpen || !isMounted || !videoId) return null
 
   return (
-    <div className="animate-in slide-in-from-bottom-10 fade-in fixed bottom-20 right-4 z-50 h-[169px] w-[300px] overflow-hidden rounded-xl border-2 border-primary/20 bg-black shadow-2xl duration-300 sm:h-[180px] sm:w-[320px]">
+    <div className="fixed bottom-20 right-4 z-50 h-[169px] w-[300px] overflow-hidden rounded-xl border-2 border-primary/20 bg-black shadow-2xl duration-300 animate-in fade-in slide-in-from-bottom-10 sm:h-[180px] sm:w-[320px]">
       {/* Kapatma Butonu */}
       <div className="absolute right-0 top-0 z-20 p-1">
         <Button

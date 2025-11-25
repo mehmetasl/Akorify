@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import SongClientWrapper from './SongClientWrapper' // Yeni oluşturduğumuz wrapper
-
+import SongClientWrapper from './SongClientWrapper'
+import { auth } from '@/auth'
 interface PageProps {
   params: { slug: string }
 }
@@ -20,12 +20,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function SongPage({ params }: PageProps) {
+  const session = await auth()
+  const userId = session?.user?.id
   const song = await prisma.song.findUnique({
     where: { slug: params.slug },
   })
 
   if (!song) return notFound()
-
+  let isFavorited = false
+  if (userId) {
+    const fav = await prisma.favorite.findUnique({
+      where: {
+        userId_songId: {
+          userId,
+          songId: song.id,
+        },
+      },
+    })
+    isFavorited = !!fav
+  }
   return (
     // pb-32: Alt kısımda video ve mobil reklam için ekstra boşluk
     <main className="min-h-screen bg-background pb-32">
@@ -50,7 +63,7 @@ export default async function SongPage({ params }: PageProps) {
           SEO için veriyi (song) buradan gönderiyoruz.
       */}
       <div className="container px-4 md:px-8">
-        <SongClientWrapper song={song} />
+        <SongClientWrapper song={song} isFavorited={isFavorited} />
       </div>
     </main>
   )
