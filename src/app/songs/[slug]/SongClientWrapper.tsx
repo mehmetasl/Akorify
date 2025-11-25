@@ -11,6 +11,7 @@ import { toggleRepertoire } from '@/actions/repertoire' // Action importu
 import { useRouter } from 'next/navigation'
 
 interface Song {
+  id: string
   title: string
   artist: string
   content: string
