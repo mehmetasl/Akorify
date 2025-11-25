@@ -15,7 +15,6 @@ interface Song {
   title: string
   artist: string
   content: string
-  youtubeUrl?: string | null
 }
 
 interface WrapperProps {
