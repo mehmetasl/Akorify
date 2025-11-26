@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 // Tooltip bileşenlerini import ediyoruz
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import SearchBar from '@/components/SearchBar'
 
 export default async function Navbar() {
   const session = await auth()
@@ -32,7 +33,6 @@ export default async function Navbar() {
             Akorify
           </span>
         </Link>
-
         {/* ORTA: Linkler */}
         <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
           <Link href="/songs" className="transition-colors hover:text-primary">
@@ -42,7 +42,10 @@ export default async function Navbar() {
             Blog
           </Link>
         </nav>
-
+        {/* ORTA: ARAMA ÇUBUĞU */}
+        <div className="mx-4 hidden max-w-md flex-1 md:block">
+          <SearchBar />
+        </div>
         {/* SAĞ TARAF: AUTH BUTONLARI */}
         <div className="flex items-center gap-4">
           {user ? (

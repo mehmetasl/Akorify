@@ -60,11 +60,7 @@ async function getSongs(searchQuery?: string, page: number = 1) {
   }
 }
 
-async function SongsList({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
+async function SongsList({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams
   const searchQuery = params.q || ''
   const page = parseInt(params.page || '1', 10)
@@ -75,11 +71,12 @@ async function SongsList({
       {/* Search Form */}
       <form action="/songs" method="get" className="relative">
         <input
+          key={searchQuery}
           type="text"
           name="q"
           defaultValue={searchQuery}
           placeholder="Şarkı veya sanatçı ara..."
-          className="w-full rounded-lg border-2 border-input bg-background px-4 py-3 pl-12 pr-4 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-colors"
+          className="w-full rounded-lg border-2 border-input bg-background px-4 py-3 pl-12 pr-4 text-sm ring-offset-background transition-colors placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
         <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
       </form>
@@ -96,12 +93,7 @@ async function SongsList({
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {songs.map((song) => (
-              <SongCard
-                key={song.id}
-                title={song.title}
-                artist={song.artist}
-                slug={song.slug}
-              />
+              <SongCard key={song.id} title={song.title} artist={song.artist} slug={song.slug} />
             ))}
           </div>
 
@@ -111,18 +103,19 @@ async function SongsList({
               {page > 1 && (
                 <Link
                   href={`/songs?page=${page - 1}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}`}
-                  className="rounded-lg border-2 border-border bg-background px-4 py-2 text-sm font-medium hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                  className="rounded-lg border-2 border-border bg-background px-4 py-2 text-sm font-medium transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   Önceki
                 </Link>
               )}
-              <span className="text-sm text-muted-foreground px-4">
-                Sayfa <span className="font-semibold text-primary">{page}</span> / <span className="font-semibold text-secondary">{totalPages}</span>
+              <span className="px-4 text-sm text-muted-foreground">
+                Sayfa <span className="font-semibold text-primary">{page}</span> /{' '}
+                <span className="font-semibold text-secondary">{totalPages}</span>
               </span>
               {page < totalPages && (
                 <Link
                   href={`/songs?page=${page + 1}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}`}
-                  className="rounded-lg border-2 border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary hover:text-secondary-foreground hover:border-secondary transition-all"
+                  className="rounded-lg border-2 border-border bg-background px-4 py-2 text-sm font-medium transition-all hover:border-secondary hover:bg-secondary hover:text-secondary-foreground"
                 >
                   Sonraki
                 </Link>
@@ -143,14 +136,10 @@ async function SongsList({
   )
 }
 
-export default async function SongsPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
+export default async function SongsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   return (
     <div className="container py-8 md:py-12">
-      <h1 className="mb-8 text-3xl font-bold md:text-4xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+      <h1 className="mb-8 bg-gradient-to-r from-primary to-secondary bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
         Tüm Şarkılar
       </h1>
       <Suspense fallback={<div>Yükleniyor...</div>}>
@@ -159,4 +148,3 @@ export default async function SongsPage({
     </div>
   )
 }
-
