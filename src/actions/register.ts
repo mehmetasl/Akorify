@@ -3,6 +3,9 @@
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
+// 👇 YENİ İMPORTLAR (Bunların dosyalarını oluşturman gerekecek)
+import { generateVerificationToken } from '@/lib/tokens'
+import { sendVerificationEmail } from '@/lib/mail'
 
 // Form doğrulama şeması
 const RegisterSchema = z.object({
@@ -43,18 +46,26 @@ export async function registerUser(formData: FormData) {
   const hashedPassword = await bcrypt.hash(password, 10)
 
   try {
+    // 1. Kullanıcıyı Oluştur
     await prisma.user.create({
       data: {
-        // Ad ve Soyadı birleştirip 'name' alanına yazıyoruz
-        // (Eğer şemana 'name' eklediysen burası çalışır, eklemediysen sadece email ve passwordHash kalmalı)
         name: `${firstName} ${lastName}`,
         email,
-        passwordHash: hashedPassword, // Şemandaki isim 'passwordHash' olduğu için
-        role: 'USER', // Varsayılan rol
+        passwordHash: hashedPassword,
+        role: 'USER',
+        // emailVerified alanını set etmiyoruz, null kalacak (Onaysız)
       },
     })
 
-    return { success: 'Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...' }
+    // 2. Doğrulama Token'ı Oluştur
+    const verificationToken = await generateVerificationToken(email)
+
+    // 3. E-posta Gönder
+    await sendVerificationEmail(verificationToken.email, verificationToken.token)
+
+    // 4. Başarılı Mesajı (Yönlendirme client tarafında veya burada yapılabilir ama mesaj önemli)
+    return { success: 'Doğrulama e-postası gönderildi! Lütfen kutunuzu kontrol edin.' }
+    
   } catch (error) {
     console.error('Kayıt Hatası:', error)
     return { error: 'Bir hata oluştu, lütfen tekrar deneyin.' }

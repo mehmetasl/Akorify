@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link' // Link ekle
+
 import {
   Minus,
   Plus,
@@ -15,6 +17,7 @@ import {
   Music,
   Youtube,
   Type,
+  Edit,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { boolean } from 'zod'
@@ -42,6 +45,7 @@ interface SongHeaderProps {
   onFontSizeChange: (size: number) => void
   isInRepertoire: boolean
   onToggleRepertoire: () => void
+  slug: string
 }
 
 export default function SongHeader({
@@ -65,6 +69,7 @@ export default function SongHeader({
   hasVideo,
   fontSize,
   onFontSizeChange,
+  slug,
 }: SongHeaderProps) {
   // const [capo, setCapo] = useState(0); // İstersen kullanabilirsin
   const [showChords, setShowChords] = useState(true)
@@ -85,6 +90,12 @@ export default function SongHeader({
         </div>
 
         <div className="flex items-center gap-3">
+          <Link href={`/songs/${slug}/edit`}>
+            <Button variant="secondary" size="sm" className="gap-2">
+              <Edit className="h-4 w-4" />
+              <span className="hidden sm:inline">Düzenle</span>
+            </Button>
+          </Link>
           <Button variant="outline" size="sm" className="gap-2">
             <Share2 className="h-4 w-4" />
             <span className="hidden sm:inline">Paylaş</span>

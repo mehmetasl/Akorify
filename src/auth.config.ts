@@ -7,19 +7,34 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      
-      // Dashboard veya Admin paneli koruması (İlerisi için)
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-      const isOnAdmin = nextUrl.pathname.startsWith("/admin");
+      const userRole = (auth?.user as any)?.role; // Kullanıcının rolünü al
 
-      if (isOnDashboard || isOnAdmin) {
-        if (isLoggedIn) return true;
-        return false; // Giriş yapmamışsa at
+      // --- 1. GÜVENLİK DUVARI (Admin ve Dashboard) ---
+      const isOnAdmin = nextUrl.pathname.startsWith("/admin");
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+
+      // Admin Paneli Koruması
+      if (isOnAdmin) {
+        // Giriş yapmamışsa -> Login sayfasına at (NextAuth bunu otomatik yapar false dönünce)
+        if (!isLoggedIn) return false;
+
+        // Giriş yapmış ama ADMIN değilse -> Ana sayfaya şutla (REDIRECT)
+        if (userRole !== "ADMIN") {
+          return Response.redirect(new URL("/", nextUrl));
+        }
+        
+        // Hem giriş yapmış hem Admin -> Geç
+        return true;
       }
 
-      // --- DÜZELTME BURADA ---
-      // Eğer kullanıcı giriş yapmışsa ve hala giriş/kayıt sayfasındaysa
-      // onu ana sayfaya yönlendir.
+      // Dashboard Koruması (Sadece giriş yapmış olmak yeterli)
+      if (isOnDashboard) {
+        if (isLoggedIn) return true;
+        return false;
+      }
+
+      // --- 2. YÖNLENDİRME (Login/Register Engeli) ---
+      // Eğer kullanıcı giriş yapmışsa, tekrar login/register sayfasına girmesin
       if (isLoggedIn) {
         if (nextUrl.pathname.startsWith("/login") || nextUrl.pathname.startsWith("/register")) {
           return Response.redirect(new URL("/", nextUrl));
@@ -28,18 +43,24 @@ export const authConfig = {
 
       return true;
     },
+    
+    // Session ve JWT ayarların doğru, aynen koruyoruz
     session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
       }
+      if (session.user) {
+         (session.user as any).emailVerified = token.emailVerified as Date | null;
+      }
       if (session.user && token.role) {
-        (session.user as any).role = token.role;
+        (session.user as any).role = token.role; 
       }
       return session;
     },
     jwt({ token, user }) {
       if (user) {
         token.role = (user as any).role;
+        token.emailVerified = (user as any).emailVerified; 
       }
       return token;
     }
