@@ -4,6 +4,7 @@ import Script from 'next/script'
 import '../styles/globals.css'
 import Navbar from '@/components/Navbar' // Yukarıda güncellediğimiz dosya buradan gelecek
 import Footer from '@/components/Footer'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1">{children}</main>
 
         <Footer />
+        <Toaster />
 
         {/* Google AdSense */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (

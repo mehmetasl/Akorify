@@ -9,7 +9,8 @@ import { extractUniqueChords } from '@/lib/chord-db'
 import { Chord } from 'chordsheetjs'
 import { toggleRepertoire } from '@/actions/repertoire'
 import { useRouter } from 'next/navigation'
-import { Badge } from '@/components/ui/badge' // 1. Badge İmportu
+import { Badge } from '@/components/ui/badge'
+import { useToast } from '@/hooks/use-toast' // Toast hook
 
 interface Song {
   id: string
@@ -33,6 +34,7 @@ interface WrapperProps {
 }
 
 export default function SongClientWrapper({ song, isFavorited }: WrapperProps) {
+  // --- STATE'LER ---
   const [isVideoOpen, setIsVideoOpen] = useState(false)
   const [isTwoColumns, setIsTwoColumns] = useState(false)
   const [transposeStep, setTransposeStep] = useState(0)
@@ -46,15 +48,42 @@ export default function SongClientWrapper({ song, isFavorited }: WrapperProps) {
   const [activeVersionId, setActiveVersionId] = useState('original')
 
   const router = useRouter()
+  const { toast } = useToast() // Hook kullanımı
 
+  // 👇 GÜNCELLENEN REPERTUAR FONKSİYONU 👇
   const handleRepertoireToggle = async () => {
+    // 1. Optimistic Update (Hemen rengi değiştir, kullanıcı beklemesin)
     const previousState = isInRepertoire
-    setIsInRepertoire(!isInRepertoire)
+    const newState = !isInRepertoire
+    setIsInRepertoire(newState)
+
+    // 2. Sunucu işlemini yap
     const result = await toggleRepertoire(song.id as string)
+
     if (result.error) {
-      setIsInRepertoire(previousState)
-      alert(result.error)
-      router.push('/giris')
+      // HATA DURUMU
+      setIsInRepertoire(previousState) // State'i geri al
+
+      toast({
+        variant: 'destructive',
+        title: 'İşlem Başarısız',
+        description: result.error,
+      })
+
+      // Eğer giriş hatasıysa yönlendir
+      if (result.error.toLowerCase().includes('giriş')) {
+        router.push('/giris')
+      }
+    } else {
+      // BAŞARILI DURUMU
+      toast({
+        title: newState ? 'Repertuara Eklendi 🎵' : 'Repertuardan Çıkarıldı',
+        description: newState
+          ? `"${song.title}" repertuarınıza eklendi.`
+          : `"${song.title}" repertuarınızdan çıkarıldı.`,
+        // Eklendiğinde yeşil, çıkarıldığında standart renk olsun
+        className: newState ? 'bg-green-600 text-white border-none' : '',
+      })
     }
   }
 
@@ -67,7 +96,11 @@ export default function SongClientWrapper({ song, isFavorited }: WrapperProps) {
 
   const handleToggleColumns = () => {
     if (fontSize > 20) {
-      alert('Yazı boyutu çok büyükken ikiye bölünemez. Lütfen fontu küçültün.')
+      toast({
+        variant: 'destructive',
+        title: 'Görünüm Değiştirilemedi',
+        description: 'Yazı boyutu çok büyükken iki sütun yapılamaz. Lütfen fontu küçültün.',
+      })
       return
     }
     setIsTwoColumns(!isTwoColumns)
@@ -177,7 +210,6 @@ export default function SongClientWrapper({ song, isFavorited }: WrapperProps) {
                   ({ver.user?.name?.split(' ')[0] || 'Kullanıcı'})
                 </span>
 
-                {/* 2. Badge Kullanımı */}
                 {!ver.isPublic && (
                   <Badge
                     variant="secondary"

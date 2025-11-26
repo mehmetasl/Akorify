@@ -9,11 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Guitar, UserPlus } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-
+  const { toast } = useToast()
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsSubmitting(true)
@@ -25,12 +26,20 @@ export default function RegisterPage() {
 
     if (result.error) {
       // Hata varsa kullanıcıya göster
-      alert(result.error)
+      toast({
+        variant: 'destructive',
+        title: 'Kayıt Başarısız',
+        description: result.error,
+      })
       setIsSubmitting(false)
     } else {
       // Başarılıysa bilgi ver ve yönlendir
-      alert(result.success)
-      router.push('/') // Şimdilik ana sayfaya, giriş yapınca Login sayfasına yönlendireceğiz
+      toast({
+        title: 'Kayıt Başarılı! 🎉',
+        description: result.success,
+        className: 'bg-green-600 text-white border-none', // Yeşil yapmak istersen class verebilirsin
+      })
+      router.push('/login') // Şimdilik ana sayfaya, giriş yapınca Login sayfasına yönlendireceğiz
     }
   }
 

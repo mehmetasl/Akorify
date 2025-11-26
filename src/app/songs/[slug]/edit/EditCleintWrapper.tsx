@@ -6,10 +6,12 @@ import { submitSongEdit } from '@/actions/version' // Eski isimle import ediyoru
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useToast } from '@/hooks/use-toast'
 
 export default function EditClientWrapper({ song }: { song: any }) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+  const { toast } = useToast()
 
   const [versionTitle, setVersionTitle] = useState('Yeni Versiyon')
   const [isPublic, setIsPublic] = useState(false)
@@ -20,10 +22,18 @@ export default function EditClientWrapper({ song }: { song: any }) {
       const result = await submitSongEdit(song.id, content, versionTitle, isPublic)
 
       if (result.success) {
-        alert(result.success)
+        toast({
+          title: 'Başarılı! 🚀',
+          description: result.success,
+          className: 'bg-green-600 text-white border-none',
+        })
         router.push(`/songs/${song.slug}`)
       } else {
-        alert(result.error)
+        toast({
+          variant: 'destructive',
+          title: 'Hata Oluştu',
+          description: result.error,
+        })
       }
     })
   }

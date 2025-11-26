@@ -110,7 +110,10 @@ export default function SongHeader({
             )}
           >
             {/* İkon dolu veya boş olsun */}
-            <Heart className={cn('h-4 w-4', isInRepertoire && 'fill-current')} />
+            <Heart
+              onClick={onToggleRepertoire}
+              className={cn('h-4 w-4', isInRepertoire && 'fill-current')}
+            />
             <span className="hidden sm:inline">
               {isInRepertoire ? 'Repertuarda' : 'Repertuara Ekle'}
             </span>

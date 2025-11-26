@@ -40,11 +40,10 @@ export default function NewSongPage() {
 
   return (
     <div className="container py-8 md:py-12">
-      <h1 className="mb-8 text-3xl font-bold md:text-4xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+      <h1 className="mb-8 bg-gradient-to-r from-primary to-secondary bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
         Yeni Şarkı Ekle
       </h1>
       <NewSongForm action={createSong} />
     </div>
   )
 }
-
