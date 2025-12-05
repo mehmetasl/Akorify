@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import SongCard from '@/components/SongCard'
 import AdSlot from '@/components/AdSlot'
-import { Search } from 'lucide-react'
+// Search ikonunu sildim, çünkü SearchBar bileşeninin içinde zaten var.
 import Link from 'next/link'
+import SearchBar from '@/components/SearchBar' // 1. BİLEŞENİ İMPORT ET
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -11,7 +12,7 @@ async function getPopularSongs() {
     const songs = await prisma.song.findMany({
       take: 12,
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc', // İstersen views: 'desc' yapabilirsin
       },
       select: {
         id: true,
@@ -29,11 +30,10 @@ async function getPopularSongs() {
 
 async function getHallOfFameSongs() {
   try {
-    // Hall of Fame için en eski eklenen şarkıları al (veya farklı bir kriter)
     const songs = await prisma.song.findMany({
       take: 12,
       orderBy: {
-        createdAt: 'asc', // En eski şarkılar
+        createdAt: 'asc',
       },
       select: {
         id: true,
@@ -60,26 +60,24 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="mb-12 text-center">
         <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-          <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
+          <span className="animate-gradient bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Şarkı Sözleri ve Gitar Akorları
           </span>
         </h1>
         <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl">
-          Türkiye&apos;nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce
-          şarkının sözleri ve akorlarını keşfedin.
+          Türkiye&apos;nin en kapsamlı şarkı sözleri ve gitar akorları platformu. Binlerce şarkının
+          sözleri ve akorlarını keşfedin.
         </p>
 
-        {/* Search Bar */}
-        <div className="mx-auto max-w-2xl">
-          <form action="/songs" method="get" className="relative">
-            <input
-              type="text"
-              name="q"
-              placeholder="Şarkı veya sanatçı ara..."
-              className="w-full rounded-lg border-2 border-input bg-background px-4 py-3 pl-12 pr-4 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-colors"
-            />
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
-          </form>
+        {/* 2. SEARCH BAR GÜNCELLEMESİ */}
+        {/* Eski <form> yapısını sildik, yerine bileşeni koyduk */}
+        <div className="mx-auto flex w-full max-w-3xl justify-center">
+          <SearchBar
+            // DIŞ KUTU: max-w-3xl (daha geniş), gölge daha belirgin (shadow-lg)
+            className="max-w-3xl shadow-lg transition-all duration-300 hover:shadow-xl"
+            showSuggestions={false}
+            inputClassName="h-16 text-xl bg-background border-2 border-border focus:border-primary rounded-2xl px-12 placeholder:text-muted-foreground/70"
+          />
         </div>
       </section>
 
@@ -89,27 +87,24 @@ export default async function HomePage() {
       {/* Popular Songs Section */}
       <section className="mb-12">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h2 className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-2xl font-bold text-transparent">
             Popüler Şarkılar
           </h2>
           <Link
             href="/songs"
-            className="text-sm font-medium text-primary hover:text-secondary transition-colors relative group"
+            className="group relative text-sm font-medium text-primary transition-colors hover:text-secondary"
           >
             Tümünü Gör
-            <span className="inline-block ml-1 group-hover:translate-x-1 transition-transform">→</span>
+            <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+              →
+            </span>
           </Link>
         </div>
 
         {popularSongs.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {popularSongs.map((song) => (
-              <SongCard
-                key={song.id}
-                title={song.title}
-                artist={song.artist}
-                slug={song.slug}
-              />
+              <SongCard key={song.id} title={song.title} artist={song.artist} slug={song.slug} />
             ))}
           </div>
         ) : (
@@ -131,27 +126,24 @@ export default async function HomePage() {
       {/* Hall of Fame Section */}
       <section className="mb-12">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+          <h2 className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-2xl font-bold text-transparent">
             Hall of Fame
           </h2>
           <Link
             href="/songs"
-            className="text-sm font-medium text-secondary hover:text-primary transition-colors relative group"
+            className="group relative text-sm font-medium text-secondary transition-colors hover:text-primary"
           >
             Tümünü Gör
-            <span className="inline-block ml-1 group-hover:translate-x-1 transition-transform">→</span>
+            <span className="ml-1 inline-block transition-transform group-hover:translate-x-1">
+              →
+            </span>
           </Link>
         </div>
 
         {hallOfFameSongs.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {hallOfFameSongs.map((song) => (
-              <SongCard
-                key={song.id}
-                title={song.title}
-                artist={song.artist}
-                slug={song.slug}
-              />
+              <SongCard key={song.id} title={song.title} artist={song.artist} slug={song.slug} />
             ))}
           </div>
         ) : (
@@ -172,4 +164,3 @@ export default async function HomePage() {
     </div>
   )
 }
-

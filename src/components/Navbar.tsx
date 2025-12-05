@@ -43,8 +43,16 @@ export default async function Navbar() {
           </Link>
         </nav>
         {/* ORTA: ARAMA ÇUBUĞU */}
-        <div className="mx-4 hidden max-w-md flex-1 md:block">
-          <SearchBar />
+        <div className="hidden max-w-md flex-1 px-4 md:block">
+          <SearchBar
+            // DIŞ KUTU: Genişliği konteynera uydur
+            className="w-full"
+            // INPUT:
+            // h-10 (40px - Standart buton boyutu)
+            // border-transparent (Daha gömülü hissi verir)
+            // bg-secondary/50 (Hafif gri)
+            inputClassName="h-10 text-sm  border-transparent focus:bg-background focus:border-primary/20 transition-all rounded-lg"
+          />
         </div>
         {/* SAĞ TARAF: AUTH BUTONLARI */}
         <div className="flex items-center gap-4">

@@ -32,8 +32,6 @@ interface SongHeaderProps {
   isScrolling: boolean
   onToggleColumns: () => void
   isTwoColumns: boolean
-
-  // 👇 EKSİK OLAN VE HATAYA SEBEP OLAN KISIM BURASI 👇
   selectedChord: string | null
   onChordToggle: (chord: string) => void
 
