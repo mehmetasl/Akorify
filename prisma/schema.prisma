@@ -26,8 +26,15 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   favorites     Favorite[]
-  emailVerified DateTime? // Bu alan zaten vardı ama yoksa ekle
+  emailVerified DateTime?
   contributions SongVersion[]
+  xp            Int           @default(0) // Kullanıcının deneyim puanı
+  levelTitle    String        @default("Çaylak Müzisyen") // Kullanıcının seviyesi için başlık
+  image         String? // DiceBear URL'i burada tutulacak
+  bio           String? // Hakkında yazısı
+  location      String? // Şehiry
+  socialLinks   String[]      @default([]) // [Twitter, Instagram, YouTube] 
+  instruments   String[] // ["Gitar", "Vokal"] (PostgreSQL array destekler)
 
   @@map("users")
 }
